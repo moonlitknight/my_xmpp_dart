@@ -1,6 +1,10 @@
-import 'dart:developer';
+/* import 'dart:developer'; */
 
 class Log {
+  static void log(String s) {
+    print(s);
+  }
+
   static LogLevel logLevel = LogLevel.VERBOSE;
 
   static bool logXmpp = true;
@@ -36,19 +40,29 @@ class Log {
   }
 
   static void xmppp_receiving(String message) {
+    if (message.startsWith('<a')) {
+      return;
+    }
+    if (message.startsWith('<r')) {
+      return;
+    }
     if (logXmpp) {
-      log('---Xmpp Receiving:---');
-      log('$message');
+      log('<<< \u001b[38:5:11m$message');
     }
   }
 
   static void xmppp_sending(String message) {
+    if (message.startsWith('<a')) {
+      return;
+    }
+    if (message.startsWith('<r')) {
+      return;
+    }
     if (logXmpp) {
-      log('---Xmpp Sending:---');
-      log('$message');
+      log('>>> \u001b[38:5:2m$message');
     }
   }
-
 }
 
 enum LogLevel { VERBOSE, DEBUG, INFO, WARNING, ERROR, OFF }
+

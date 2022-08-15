@@ -4,7 +4,6 @@ import 'package:universal_io/io.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:xmpp_stone/src/connection/XmppWebsocketApi.dart';
 
-
 export 'XmppWebsocketApi.dart';
 
 XmppWebSocket createSocket() {
@@ -13,7 +12,7 @@ XmppWebSocket createSocket() {
 
 bool isTlsRequired() {
   // return the `false`, cause for the 'html' socket initially creates as secured
-  return false;
+  return true;
 }
 
 class XmppWebSocketHtml extends XmppWebSocket {
@@ -25,13 +24,12 @@ class XmppWebSocketHtml extends XmppWebSocket {
   @override
   Future<XmppWebSocket> connect<S>(String host, int port,
       {String Function(String event)? map}) {
-    print('[XmppWebSocketHtml][connect] host: $host, port: $port');
+    var path = "/ws";
+    port = 5443;
+    print('[XmppWebSocketHtml][connect] host: $host, port: $port $path');
     _socket = WebSocketChannel.connect(
-      Uri(
-        scheme: 'wss',
-        host: host,
-        port: port,
-      ),
+      /* Uri(scheme: 'wss', host: "ec2e.chalk.tel", port: 5443, path: "/ws"), */
+      Uri(scheme: 'wss', host: host, port: port, path: "/ws"),
       protocols: ['xmpp'],
     );
 

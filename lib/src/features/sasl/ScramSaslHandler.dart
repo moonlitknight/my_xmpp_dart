@@ -60,7 +60,7 @@ class ScramSaslHandler implements AbstractSaslHandler {
   }
 
   void generateRandomClientNonce() {
-    var bytes = [];
+    var bytes = new List.filled(CLIENT_NONCE_LENGTH, 1, growable: false);
     for (var i = 0; i < CLIENT_NONCE_LENGTH; i++) {
       bytes[i] = Random.secure().nextInt(256);
     }
@@ -175,7 +175,7 @@ class ScramSaslHandler implements AbstractSaslHandler {
     } catch (e) {
       _fireAuthFailed('Invalid key');
     }
-    var clientProof = [];
+    var clientProof = new List.filled(clientKey.length, 1, growable: false);
     for (var i = 0; i < clientKey.length; i++) {
       clientProof[i] = clientKey[i] ^ clientSignature[i];
     }
