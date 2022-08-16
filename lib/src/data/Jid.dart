@@ -13,7 +13,10 @@ class Jid {
 
   @override
   bool operator ==(other) {
-    return other is Jid && local == other.local && domain == other.domain && resource == other.resource;
+    return other is Jid &&
+        local == other.local &&
+        domain == other.domain &&
+        resource == other.resource;
   }
 
   String get local => _local;
@@ -47,6 +50,7 @@ class Jid {
     return local.isNotEmpty && domain.isNotEmpty;
   }
 
+  /// returns a Jid object created by parsing a full jid string usr@domain/resource
   static Jid fromFullJid(String fullJid) {
     var exp = RegExp('^(?:([^@/<>\'"]*)@)?([^@/<>\'"]+)(?:/([^<>\'"]*))?\$');
     var match = exp.firstMatch(fullJid);
