@@ -13,6 +13,8 @@ class MessageHandler implements MessageApi {
         .map((stanza) => stanza as MessageStanza?);
   }
 
+  /// factory method to return an instance of MessageHandler.
+  /// either returns a previously created MessageHandler for this Connection, or creates a new one
   static MessageHandler getInstance(Connection connection) {
     var manager = instances[connection];
     if (manager == null) {

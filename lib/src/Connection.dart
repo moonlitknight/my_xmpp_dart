@@ -19,8 +19,8 @@ import 'package:xmpp_stone/src/roster/RosterManager.dart';
 import 'package:xmpp_stone/xmpp_stone.dart';
 
 import 'connection/XmppWebsocketApi.dart'
-  if (dart.library.io) 'connection/XmppWebsocketIo.dart'
-  if (dart.library.html) 'connection/XmppWebsocketHtml.dart' as xmppSocket;
+    if (dart.library.io) 'connection/XmppWebsocketIo.dart'
+    if (dart.library.html) 'connection/XmppWebsocketHtml.dart' as xmppSocket;
 
 import 'logger/Log.dart';
 
@@ -201,16 +201,18 @@ xml:lang='en'
     connectionNegotatiorManager.init();
     setState(XmppConnectionState.SocketOpening);
     try {
-
       var socket = xmppSocket.createSocket();
 
-      return await socket.connect(account.host ?? account.domain, account.port, map: prepareStreamResponse).then((socket) {
+      return await socket
+          .connect(account.host ?? account.domain, account.port,
+              account.webSocketPath,
+              map: prepareStreamResponse)
+          .then((socket) {
         // if not closed in meantime
         if (_state != XmppConnectionState.Closed) {
           setState(XmppConnectionState.SocketOpened);
           _socket = socket;
-          socket
-              .listen(handleResponse, onDone: handleConnectionDone);
+          socket.listen(handleResponse, onDone: handleConnectionDone);
           _openStream();
         } else {
           Log.d(TAG, 'Closed in meantime');
@@ -377,9 +379,10 @@ xml:lang='en'
   void startSecureSocket() {
     Log.d(TAG, 'startSecureSocket');
 
-    _socket!.secure(onBadCertificate: _validateBadCertificate).
-        then((secureSocket) {
-          if(secureSocket == null) return;
+    _socket!
+        .secure(onBadCertificate: _validateBadCertificate)
+        .then((secureSocket) {
+      if (secureSocket == null) return;
 
       secureSocket
           .cast<List<int>>()
@@ -402,10 +405,9 @@ xml:lang='en'
   }
 
   bool elementHasAttribute(xml.XmlElement element, xml.XmlAttribute attribute) {
-    var list = element.attributes.firstWhereOrNull(
-        (attr) =>
-            attr.name.local == attribute.name.local &&
-            attr.value == attribute.value);
+    var list = element.attributes.firstWhereOrNull((attr) =>
+        attr.name.local == attribute.name.local &&
+        attr.value == attribute.value);
     return list != null;
   }
 
