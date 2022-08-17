@@ -24,7 +24,8 @@ class RosterManager {
 
   final Map<String, Tuple2<IqStanza, Completer?>> _myUnrespondedIqStanzas = {};
 
-  final StreamController<List<Buddy>> _rosterController = StreamController<List<Buddy>>.broadcast();
+  final StreamController<List<Buddy>> _rosterController =
+      StreamController<List<Buddy>>.broadcast();
 
   Stream<List<Buddy>> get rosterStream {
     return _rosterController.stream;
@@ -62,7 +63,8 @@ class RosterManager {
     var itemElement = XmppElement();
     itemElement.name = 'item';
     queryElement.addChild(itemElement);
-    itemElement.addAttribute(XmppAttribute('jid', rosterItem.jid!.userAtDomain));
+    itemElement
+        .addAttribute(XmppAttribute('jid', rosterItem.jid!.userAtDomain));
     if (rosterItem.name != null) {
       itemElement.addAttribute(XmppAttribute('name', rosterItem.name));
     }
@@ -81,7 +83,8 @@ class RosterManager {
     var itemElement = XmppElement();
     itemElement.name = 'item';
     queryElement.addChild(itemElement);
-    itemElement.addAttribute(XmppAttribute('jid', rosterItem.jid!.userAtDomain));
+    itemElement
+        .addAttribute(XmppAttribute('jid', rosterItem.jid!.userAtDomain));
     itemElement.addAttribute(XmppAttribute('subscription', 'remove'));
     _myUnrespondedIqStanzas[iqStanza.id!] = Tuple2(iqStanza, completer);
     ;
@@ -127,7 +130,8 @@ class RosterManager {
   }
 
   bool _isFullJidRequest(IqStanza iqStanza) {
-    return (iqStanza.type == IqStanzaType.GET && (iqStanza.getChild('query')?.children.isEmpty ?? false));
+    return (iqStanza.type == IqStanzaType.GET &&
+        (iqStanza.getChild('query')?.children.isEmpty ?? false));
   }
 
   bool _isRosterSet(IqStanza iqStanza) {
@@ -141,7 +145,8 @@ class RosterManager {
 
   void _handleFullRosterResponse(IqStanza stanza) {
     var xmppElement = stanza.getChild('query');
-    if (xmppElement != null && xmppElement.getNameSpace() == 'jabber:iq:roster') {
+    if (xmppElement != null &&
+        xmppElement.getNameSpace() == 'jabber:iq:roster') {
       _rosterMap.clear();
       xmppElement.children.forEach((child) {
         if (child.name == 'item') {
@@ -172,9 +177,13 @@ class RosterManager {
 
   //todo add error description
   void _handleRosterSetErrorResponse(Tuple2<IqStanza, Completer?> request) {
-    request.item2!.complete(IqStanzaResult()
-      ..type = IqStanzaType.ERROR
-      ..description = '');
+    if (request.item2 != null) {
+      request.item2!.complete(IqStanzaResult()
+        ..type = IqStanzaType.ERROR
+        ..description = '');
+    } else {
+      print("[RM180] something wrong with the last stanza");
+    }
     _myUnrespondedIqStanzas.remove(request.item1.id);
   }
 }
