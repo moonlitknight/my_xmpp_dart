@@ -115,7 +115,6 @@ class ConnectionNegotiatorManager {
     //     .add(ServiceDiscoveryNegotiator.getInstance(_connection));
     supportedNegotiatorList.add(CarbonsNegotiator.getInstance(_connection));
     supportedNegotiatorList.add(MAMNegotiator.getInstance(_connection));
-
   }
 
   void stateListener(NegotiatorState state) {
@@ -143,12 +142,19 @@ class ConnectionNegotiatorManager {
   }
 
   void addFeatures(List<Feature> supportedFeatures) {
-    Log.e(TAG,
-        'ADDING FEATURES count: ${supportedFeatures.length} $supportedFeatures');
+    Log.e(TAG, 'ADDING FEATURES count: ${supportedFeatures.length} ');
+    supportedFeatures.forEach((element) {
+      // add iterative print coz original was trying to print the List
+      print(element.xmppVar);
+    });
     supportedNegotiatorList.forEach((negotiator) {
       var matchingNonzas = negotiator.match(supportedFeatures);
       if (matchingNonzas != null && matchingNonzas.isNotEmpty) {
-        Log.d(TAG, 'Adding negotiator: $negotiator $matchingNonzas');
+        Log.d(TAG, 'Adding negotiator: $negotiator');
+        matchingNonzas.forEach((element) {
+          // add iterative print coz original was trying to print the List
+          print("-- ${element.name}");
+        });
         waitingNegotiators
             .add(NegotiatorWithSupportedNonzas(negotiator, matchingNonzas));
       }
