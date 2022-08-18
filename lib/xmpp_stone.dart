@@ -24,3 +24,6 @@ export 'src/elements/stanzas/AbstractStanza.dart';
 export 'src/elements/XmppElement.dart';
 export 'src/elements/XmppAttribute.dart';
 export 'src/features/message_archive/MessageArchiveManager.dart';
+/* moonlitknight */
+
+export 'src/features/Xep0184.dart';
