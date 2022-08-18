@@ -8,12 +8,17 @@ class XmppAccountSettings {
   String password;
   String? host;
   int port;
+
+  /// /ws for ejabberd, /ws-xmpp for mongooseim
+  String webSocketPath;
   int totalReconnections = 3;
   int reconnectionTimeout = 1000;
   bool ackEnabled = true;
   bool smResumable = true;
 
-  XmppAccountSettings(this.name, this.username, this.domain, this.password, this.port, {this.host, this.resource} );
+  XmppAccountSettings(
+      this.name, this.username, this.domain, this.password, this.port,
+      {this.host, this.webSocketPath = "/ws", this.resource});
 
   Jid get fullJid => Jid(username, domain, resource);
 

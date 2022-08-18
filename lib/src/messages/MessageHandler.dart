@@ -13,6 +13,8 @@ class MessageHandler implements MessageApi {
         .map((stanza) => stanza as MessageStanza?);
   }
 
+  /// factory method to return an instance of MessageHandler.
+  /// either returns a previously created MessageHandler for this Connection, or creates a new one
   static MessageHandler getInstance(Connection connection) {
     var manager = instances[connection];
     if (manager == null) {
@@ -28,13 +30,14 @@ class MessageHandler implements MessageApi {
   MessageHandler(this._connection);
 
   @override
-  void sendMessage(Jid to, String text) {
-    _sendMessageStanza(to, text);
+  void sendMessage(Jid to, String text, MessageStanzaType? messageType) {
+    _sendMessageStanza(to, text, messageType);
   }
 
-  void _sendMessageStanza(Jid jid, String text) {
-    var stanza =
-        MessageStanza(AbstractStanza.getRandomId(), MessageStanzaType.CHAT);
+  void _sendMessageStanza(
+      Jid jid, String text, MessageStanzaType? messageType) {
+    var stanza = MessageStanza(
+        AbstractStanza.getRandomId(), messageType ?? MessageStanzaType.CHAT);
     stanza.toJid = jid;
     stanza.fromJid = _connection.fullJid;
     stanza.body = text;

@@ -10,7 +10,8 @@ bool isTlsRequired() {
 }
 
 abstract class XmppWebSocket extends Stream<String> {
-  Future<XmppWebSocket> connect<S>(String host, int port,
+  /// webSocketPath /ws for ejabberd, /ws-xmpp for mongooseim
+  Future<XmppWebSocket> connect<S>(String host, int port, String webSocketPath,
       {String Function(String event)? map});
 
   void write(Object? message);

@@ -1,5 +1,9 @@
-import 'package:xmpp_stone/src/data/Jid.dart';
+import '../../xmpp_stone.dart';
 
 abstract class MessageApi {
-  void sendMessage(Jid to, String text);
+  /// Send a simple message. See also [Chat.sendMessage]
+  /// @param [Jid] to as a Jid
+  /// @param text
+  /// @paam [MessageStanzaType] optional message type enum (chat, groupchat, etc)
+  void sendMessage(Jid to, String text, MessageStanzaType? messageType);
 }
