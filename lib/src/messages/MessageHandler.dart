@@ -4,6 +4,9 @@ import 'package:xmpp_stone/src/elements/stanzas/AbstractStanza.dart';
 import 'package:xmpp_stone/src/elements/stanzas/MessageStanza.dart';
 import 'package:xmpp_stone/src/messages/MessageApi.dart';
 
+import '../features/Xep0184.dart';
+import 'xmppMessageAttributes.dart';
+
 class MessageHandler implements MessageApi {
   static Map<Connection, MessageHandler> instances = {};
 
@@ -30,17 +33,21 @@ class MessageHandler implements MessageApi {
   MessageHandler(this._connection);
 
   @override
-  void sendMessage(Jid to, String text, MessageStanzaType? messageType) {
-    _sendMessageStanza(to, text, messageType);
+  void sendMessage(Jid to, String text, {XmppMessageAttributes? attributes}) {
+    attributes = attributes ?? new XmppMessageAttributes();
+    _sendMessageStanza(to, text, attributes);
   }
 
   void _sendMessageStanza(
-      Jid jid, String text, MessageStanzaType? messageType) {
-    var stanza = MessageStanza(
-        AbstractStanza.getRandomId(), messageType ?? MessageStanzaType.CHAT);
+      Jid jid, String text, XmppMessageAttributes attributes) {
+    var stanza =
+        MessageStanza(AbstractStanza.getRandomId(), attributes.messageType);
     stanza.toJid = jid;
     stanza.fromJid = _connection.fullJid;
     stanza.body = text;
+    if (attributes.requestDR) {
+      Xep0184.addDRrequest(stanza);
+    }
     _connection.writeStanza(stanza);
   }
 }

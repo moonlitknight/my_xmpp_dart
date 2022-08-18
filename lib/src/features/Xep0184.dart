@@ -11,12 +11,13 @@ class Xep0184 {
   bool doesMessageHaveDRrequest(MessageStanza message) {
     var hasDRr = false;
     message.children.forEach((element) {
-      print("--NS------- ${element.getNameSpace()}");
+      print("--${element.name}------- ${element.getNameSpace()}");
       if ("request" == element.name &&
           "urn:xmpp:receipts" == element.getNameSpace()) {
         hasDRr = true;
       }
     });
+    print("returngin $hasDRr");
     return hasDRr;
   }
 
@@ -25,7 +26,7 @@ class Xep0184 {
   /* void sendDR(MessageStanza message); */
   void sendDR(MessageStanza message) {
     print(
-        "${message.getAttribute('id')} ${message.fromJid!.fullJid} ${message.toJid!.fullJid} ${message.id}");
+        "in senddr ${message.getAttribute('id')} ${message.fromJid!.fullJid} ${message.toJid!.fullJid} ${message.id}");
     /* var id = message.messageStanza.getAttribute("ine commentd"); */
     /* var from = message.from; */
     /* var to = message.to; */
@@ -39,6 +40,14 @@ class Xep0184 {
     xep0184_received.addAttribute(new XmppAttribute("id", message.id));
     dr.addChild(xep0184_received);
     this.connection.writeStanza(dr);
+  }
+
+  /// adds an XEP-0184 request DRR child <request xmlns='urn:xmpp:receipts'/> to the stanza
+  static void addDRrequest(MessageStanza stanza) {
+    var requestChild = new XmppElement();
+    requestChild.name = "request";
+    requestChild.addAttribute(new XmppAttribute("xmlns", "urn:xmpp:receipts"));
+    stanza.addChild(requestChild);
   }
 }
 /*
