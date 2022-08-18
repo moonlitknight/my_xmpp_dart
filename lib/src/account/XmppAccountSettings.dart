@@ -18,7 +18,7 @@ class XmppAccountSettings {
 
   XmppAccountSettings(
       this.name, this.username, this.domain, this.password, this.port,
-      {this.host, this.webSocketPath = "/ws-xmpp", this.resource});
+      {this.host, this.webSocketPath = "/ws", this.resource});
 
   Jid get fullJid => Jid(username, domain, resource);
 
