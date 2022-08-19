@@ -17,7 +17,6 @@ import 'package:xml/xml.dart' as xml;
 import 'package:xmpp_stone/src/features/streammanagement/StreamManagmentModule.dart';
 
 import '../elements/nonzas/Nonza.dart';
-import '../logger/Log.dart';
 import 'Negotiator.dart';
 import 'servicediscovery/ServiceDiscoveryNegotiator.dart';
 
@@ -42,7 +41,7 @@ class ConnectionNegotiatorManager {
   }
 
   void negotiateFeatureList(xml.XmlElement element) {
-    Log.d(TAG, 'Negotiating features');
+    _connection.log.d(TAG, 'Negotiating features');
     var nonzas = element.descendants
         .whereType<xml.XmlElement>()
         .map((element) => Nonza.parse(element))
@@ -80,7 +79,8 @@ class ConnectionNegotiatorManager {
       //TODO: this should be refactored
       if (activeSubscription != null) activeSubscription!.cancel();
       if (activeNegotiator != null) {
-        Log.d(TAG, 'ACTIVE FEATURE: ${negotiatorWithData.negotiator}');
+        _connection.log
+            .d(TAG, 'ACTIVE FEATURE: ${negotiatorWithData.negotiator}');
       }
 
       try {
@@ -119,7 +119,7 @@ class ConnectionNegotiatorManager {
 
   void stateListener(NegotiatorState state) {
     if (state == NegotiatorState.NEGOTIATING) {
-      Log.d(TAG, 'Feature Started Parsing');
+      _connection.log.d(TAG, 'Feature Started Parsing');
     } else if (state == NegotiatorState.DONE_CLEAN_OTHERS) {
       cleanNegotiators();
     } else if (state == NegotiatorState.DONE) {
@@ -130,11 +130,11 @@ class ConnectionNegotiatorManager {
   NegotiatorWithSupportedNonzas? pickNextNegotiator() {
     if (waitingNegotiators.isEmpty) return null;
     var negotiatorWithData = waitingNegotiators.firstWhere((element) {
-      Log.d(TAG,
+      _connection.log.d(TAG,
           'Found matching negotiator ${element!.negotiator.isReady().toString()}');
       return element.negotiator.isReady();
     }, orElse: () {
-      Log.d(TAG, 'No matching negotiator');
+      _connection.log.d(TAG, 'No matching negotiator');
       return null;
     });
     waitingNegotiators.remove(negotiatorWithData);
@@ -142,7 +142,8 @@ class ConnectionNegotiatorManager {
   }
 
   void addFeatures(List<Feature> supportedFeatures) {
-    Log.e(TAG, 'ADDING FEATURES count: ${supportedFeatures.length} ');
+    _connection.log
+        .e(TAG, 'ADDING FEATURES count: ${supportedFeatures.length} ');
     supportedFeatures.forEach((element) {
       // add iterative print coz original was trying to print the List
       print(element.xmppVar);
@@ -150,7 +151,7 @@ class ConnectionNegotiatorManager {
     supportedNegotiatorList.forEach((negotiator) {
       var matchingNonzas = negotiator.match(supportedFeatures);
       if (matchingNonzas != null && matchingNonzas.isNotEmpty) {
-        Log.d(TAG, 'Adding negotiator: $negotiator');
+        _connection.log.d(TAG, 'Adding negotiator: $negotiator');
         matchingNonzas.forEach((element) {
           // add iterative print coz original was trying to print the List
           print("-- ${element.name}");

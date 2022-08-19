@@ -4,7 +4,7 @@ import 'package:xmpp_stone/src/data/Jid.dart';
 import 'package:xmpp_stone/src/elements/stanzas/MessageStanza.dart';
 import '../elements/XmppElement.dart';
 import '../elements/stanzas/MessageStanza.dart';
-import '../logger/Log.dart';
+/* import '../logger/Log.dart'; */
 
 class Message {
   static String TAG = 'Message';
@@ -66,94 +66,95 @@ class Message {
   static Message? _parseCarbon(MessageStanza stanza) {
     var carbon = stanza.children.firstWhereOrNull(
         (element) => (element.name == 'sent' || element.name == 'received'))!;
-    try {
-      var forwarded = carbon.getChild('forwarded');
-      if (forwarded != null) {
-        var message = forwarded.getChild('message');
-        if (message != null) {
-          Jid? to;
-          if(message.getAttribute('to') != null && message.getAttribute('to')!.value != null){
-            to = Jid.fromFullJid(message.getAttribute('to')!.value!);
-          }
-
-          Jid? from;
-          if(message.getAttribute('from') != null && message.getAttribute('from')!.value != null){
-            from = Jid.fromFullJid(message.getAttribute('from')!.value!);
-          }
-
-          var body = message.getChild('body')?.textValue;
-          var type = (_parseType(message));
-          var chatState = _parseState(message);
-          var threadId = message.getChild('thread')?.textValue;
-          var dateTime = _parseDelayed(forwarded);
-          var delayed = dateTime != null;
-          dateTime ??= DateTime.now();
-          return Message(stanza, to, from, body, dateTime,
-              threadId: threadId,
-              isForwarded: true,
-              isDelayed: delayed,
-              chatState: chatState,
-              type: type);
+    /* try { */
+    var forwarded = carbon.getChild('forwarded');
+    if (forwarded != null) {
+      var message = forwarded.getChild('message');
+      if (message != null) {
+        Jid? to;
+        if (message.getAttribute('to') != null &&
+            message.getAttribute('to')!.value != null) {
+          to = Jid.fromFullJid(message.getAttribute('to')!.value!);
         }
+
+        Jid? from;
+        if (message.getAttribute('from') != null &&
+            message.getAttribute('from')!.value != null) {
+          from = Jid.fromFullJid(message.getAttribute('from')!.value!);
+        }
+
+        var body = message.getChild('body')?.textValue;
+        var type = (_parseType(message));
+        var chatState = _parseState(message);
+        var threadId = message.getChild('thread')?.textValue;
+        var dateTime = _parseDelayed(forwarded);
+        var delayed = dateTime != null;
+        dateTime ??= DateTime.now();
+        return Message(stanza, to, from, body, dateTime,
+            threadId: threadId,
+            isForwarded: true,
+            isDelayed: delayed,
+            chatState: chatState,
+            type: type);
       }
-    } catch (e) {
-      Log.e(TAG, 'Error while parsing message');
     }
-    return null;
+    /* } catch (e) { */
+    /*   Log.e(TAG, 'Error while parsing message'); */
+    /* } */
+    /* return null; */
   }
 
   static Message? _parseArchived(MessageStanza stanza) {
-    var result = stanza.children.firstWhereOrNull(
-        (element) => (element.name == 'result'));
+    var result = stanza.children
+        .firstWhereOrNull((element) => (element.name == 'result'));
 
-    try {
-      var queryId = result?.getAttribute('queryId')?.value;
-      var forwarded = result?.getChild('forwarded');
-      if (forwarded != null) {
-        var message = forwarded.getChild('message');
-        if (message != null) {
-          Jid? to;
-          if (message.getAttribute('to') != null &&
-              message.getAttribute('to')!.value != null) {
-            to = Jid.fromFullJid(message.getAttribute('to')!.value!);
-          }
-
-          Jid? from;
-          if (message.getAttribute('from') != null &&
-              message.getAttribute('from')!.value != null) {
-            from = Jid.fromFullJid(message.getAttribute('from')!.value!);
-          }
-
-          var body = message.getChild('body')?.textValue;
-          var threadId = message.getChild('thread')?.textValue;
-          var stanzaId =
-              message.getChild('stanza-id')?.getAttribute('id')?.value;
-          var type = (_parseType(message));
-          var dateTime = _parseDelayed(forwarded);
-          var delayed = dateTime != null;
-          dateTime ??= DateTime.now();
-          var chatState = _parseState(message);
-          return Message(stanza, to, from, body, dateTime,
-              threadId: threadId,
-              isForwarded: true,
-              queryId: queryId,
-              isDelayed: delayed,
-              stanzaId: stanzaId,
-              chatState: chatState,
-              type: type);
+    /* try { */
+    var queryId = result?.getAttribute('queryId')?.value;
+    var forwarded = result?.getChild('forwarded');
+    if (forwarded != null) {
+      var message = forwarded.getChild('message');
+      if (message != null) {
+        Jid? to;
+        if (message.getAttribute('to') != null &&
+            message.getAttribute('to')!.value != null) {
+          to = Jid.fromFullJid(message.getAttribute('to')!.value!);
         }
+
+        Jid? from;
+        if (message.getAttribute('from') != null &&
+            message.getAttribute('from')!.value != null) {
+          from = Jid.fromFullJid(message.getAttribute('from')!.value!);
+        }
+
+        var body = message.getChild('body')?.textValue;
+        var threadId = message.getChild('thread')?.textValue;
+        var stanzaId = message.getChild('stanza-id')?.getAttribute('id')?.value;
+        var type = (_parseType(message));
+        var dateTime = _parseDelayed(forwarded);
+        var delayed = dateTime != null;
+        dateTime ??= DateTime.now();
+        var chatState = _parseState(message);
+        return Message(stanza, to, from, body, dateTime,
+            threadId: threadId,
+            isForwarded: true,
+            queryId: queryId,
+            isDelayed: delayed,
+            stanzaId: stanzaId,
+            chatState: chatState,
+            type: type);
       }
-    } catch (e) {
-      Log.e(TAG, 'Error while parsing archived message $e');
     }
-    return null;
+    /* } catch (e) { */
+    /*   Log.e(TAG, 'Error while parsing archived message $e'); */
+    /* } */
+    /* return null; */
   }
 
   static MessageStanzaType? _parseType(XmppElement element) {
     var typeString = element.getAttribute('type');
     MessageStanzaType? type;
     if (typeString == null) {
-      Log.w(TAG, 'No type found for iq stanza');
+      /* Log.w(TAG, 'No type found for iq stanza'); */
     } else {
       switch (typeString.value) {
         case 'chat':
@@ -177,10 +178,9 @@ class Message {
   }
 
   static ChatState? _parseState(XmppElement element) {
-    var stateElement = element.children.firstWhereOrNull(
-        (element) =>
-            element.getAttribute('xmlns')?.value ==
-            'http://jabber.org/protocol/chatstates');
+    var stateElement = element.children.firstWhereOrNull((element) =>
+        element.getAttribute('xmlns')?.value ==
+        'http://jabber.org/protocol/chatstates');
     if (stateElement != null) {
       return _stateFromString(stateElement.name);
     } else {
@@ -216,12 +216,12 @@ class Message {
     var delayed = element.getChild('delay');
     if (delayed != null) {
       var stamped = delayed.getAttribute('stamp')!.value!;
-      try {
-        var dateTime = DateTime.parse(stamped);
-        return dateTime;
-      } catch (e) {
-        Log.e(TAG, 'Date Parsing problem');
-      }
+      /* try { */
+      var dateTime = DateTime.parse(stamped);
+      return dateTime;
+      /* } catch (e) { */
+      /*   Log.e(TAG, 'Date Parsing problem'); */
+      /* } */
     }
     return null;
   }

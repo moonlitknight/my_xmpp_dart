@@ -22,8 +22,6 @@ import 'connection/XmppWebsocketApi.dart'
     if (dart.library.io) 'connection/XmppWebsocketIo.dart'
     if (dart.library.html) 'connection/XmppWebsocketHtml.dart' as xmppSocket;
 
-import 'logger/Log.dart';
-
 enum XmppConnectionState {
   Idle,
   Closed,
@@ -48,7 +46,7 @@ enum XmppConnectionState {
 
 class Connection {
   var lock = Lock(reentrant: true);
-
+  late Log log;
   static String TAG = 'Connection';
 
   static Map<String, Connection> instances = {};
@@ -67,12 +65,13 @@ class Connection {
 
   String? _serverName;
 
-  static Connection getInstance(XmppAccountSettings account) {
+  static Connection getInstance(Log log, XmppAccountSettings account) {
     var connection = instances[account.fullJid.userAtDomain];
     if (connection == null) {
-      connection = Connection(account);
+      connection = Connection(log, account);
       instances[account.fullJid.userAtDomain] = connection;
     }
+    connection.log = log;
     return connection;
   }
 
@@ -134,7 +133,7 @@ class Connection {
 
   ReconnectionManager? reconnectionManager;
 
-  Connection(this.account) {
+  Connection(this.log, this.account) {
     RosterManager.getInstance(this);
     PresenceManager.getInstance(this);
     MessageHandler.getInstance(this);
@@ -161,7 +160,7 @@ xml:lang='en'
   }
 
   String prepareStreamResponse(String response) {
-    Log.xmppp_receiving(response);
+    log.xmppp_receiving(response);
     var response1 = extractWholeChild(restOfResponse + response);
     if (response1.contains('</stream:stream>')) {
       close();
@@ -215,12 +214,12 @@ xml:lang='en'
           socket.listen(handleResponse, onDone: handleConnectionDone);
           _openStream();
         } else {
-          Log.d(TAG, 'Closed in meantime');
+          log.d(TAG, 'Closed in meantime');
           socket.close();
         }
       });
     } catch (error) {
-      Log.e(TAG, 'Socket Exception' + error.toString());
+      log.e(TAG, 'Socket Exception' + error.toString());
       handleConnectionError(error.toString());
     }
   }
@@ -237,7 +236,7 @@ xml:lang='en'
           setState(XmppConnectionState.Closing);
           _socket!.write('</stream:stream>');
         } on Exception {
-          Log.d(TAG, 'Socket already closed');
+          log.d(TAG, 'Socket already closed');
         }
       }
       authenticated = false;
@@ -274,7 +273,7 @@ xml:lang='en'
       } else {
         fullResponse = _unparsedXmlResponse;
       }
-      Log.v(TAG, 'full response = $fullResponse');
+      log.v(TAG, 'full response = $fullResponse');
       _unparsedXmlResponse = '';
     } else {
       fullResponse = response;
@@ -290,7 +289,7 @@ xml:lang='en'
         xmlResponse = xml.XmlElement(xml.XmlName('error'));
       }
 //      xmlResponse.descendants.whereType<xml.XmlElement>().forEach((element) {
-//        Log.d("element: " + element.name.local);
+//        log.d("element: " + element.name.local);
 //      });
       //TODO: Improve parser for children only
       xmlResponse!.descendants
@@ -320,7 +319,7 @@ xml:lang='en'
   }
 
   void processInitialStream(xml.XmlElement initialStream) {
-    Log.d(TAG, 'processInitialStream');
+    log.d(TAG, 'processInitialStream');
     var from = initialStream.getAttribute('from');
     if (from != null) {
       _serverName = from;
@@ -335,7 +334,7 @@ xml:lang='en'
   }
 
   void write(message) {
-    Log.xmppp_sending(message);
+    log.xmppp_sending(message);
     if (isOpened()) {
       _socket!.write(message);
     }
@@ -355,7 +354,7 @@ xml:lang='en'
     _state = state;
     _fireConnectionStateChangedEvent(state);
     _processState(state);
-    Log.d(TAG, 'State: $_state');
+    log.d(TAG, 'State: $_state');
   }
 
   XmppConnectionState get state {
@@ -377,7 +376,7 @@ xml:lang='en'
   }
 
   void startSecureSocket() {
-    Log.d(TAG, 'startSecureSocket');
+    log.d(TAG, 'startSecureSocket');
 
     _socket!
         .secure(onBadCertificate: _validateBadCertificate)
@@ -440,12 +439,12 @@ xml:lang='en'
   }
 
   void handleConnectionDone() {
-    Log.d(TAG, 'Handle connection done');
+    log.d(TAG, 'Handle connection done');
     handleCloseState();
   }
 
   void handleSecuredConnectionDone() {
-    Log.d(TAG, 'Handle secured connection done');
+    log.d(TAG, 'Handle secured connection done');
     handleCloseState();
   }
 
@@ -465,7 +464,7 @@ xml:lang='en'
   }
 
   void handleSecuredConnectionError(String error) {
-    Log.d(TAG, 'Handle Secured Error  $error');
+    log.d(TAG, 'Handle Secured Error  $error');
     handleCloseState();
   }
 

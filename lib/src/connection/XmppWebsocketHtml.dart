@@ -22,7 +22,7 @@ class XmppWebSocketHtml extends XmppWebSocket {
   XmppWebSocketHtml();
 
   @override
-  Future<XmppWebSocket> connect<S>(String host, int port,
+  Future<XmppWebSocket> connect<S>(String host, int port, String path,
       {String Function(String event)? map}) {
     var path = "/ws";
     port = 5443;

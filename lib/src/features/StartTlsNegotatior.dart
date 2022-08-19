@@ -22,7 +22,7 @@ class StartTlsNegotiator extends Negotiator {
 
   @override
   void negotiate(List<Nonza> nonzas) {
-    Log.d(TAG, 'negotiating starttls');
+    _connection.log.d(TAG, 'negotiating starttls');
     if (match(nonzas) != null) {
       state = NegotiatorState.NEGOTIATING;
       subscription = _connection.inNonzasStream.listen(checkNonzas);
@@ -42,10 +42,9 @@ class StartTlsNegotiator extends Negotiator {
 
   @override
   List<Nonza> match(List<Nonza> requests) {
-    var nonza = requests.firstWhereOrNull(
-        (request) =>
-            request.name == 'starttls' &&
-            request.getAttribute('xmlns')?.value == expectedNameSpace);
+    var nonza = requests.firstWhereOrNull((request) =>
+        request.name == 'starttls' &&
+        request.getAttribute('xmlns')?.value == expectedNameSpace);
     return nonza != null ? [nonza] : [];
   }
 }
