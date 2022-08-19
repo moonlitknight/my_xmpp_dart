@@ -1,12 +1,6 @@
 import 'package:xmpp_stone/xmpp_stone.dart';
 
 class Xep0184 {
-  late Connection connection;
-
-  Xep0184(Connection connection) {
-    this.connection = connection;
-  }
-
   /// examines the children of the message stanza looking for an XEP-0184 request
   bool doesMessageHaveDRrequest(MessageStanza message) {
     var hasDRr = false;
@@ -24,7 +18,7 @@ class Xep0184 {
   /// Send a XEP-0184 delivery receipt
   /// @param [Message] the incoming message we're receipting
   /* void sendDR(MessageStanza message); */
-  void sendDR(MessageStanza message) {
+  void sendDR(Connection connection, MessageStanza message) {
     print(
         "in senddr ${message.getAttribute('id')} ${message.fromJid!.fullJid} ${message.toJid!.fullJid} ${message.id}");
     /* var id = message.messageStanza.getAttribute("ine commentd"); */
@@ -39,7 +33,7 @@ class Xep0184 {
         .addAttribute(new XmppAttribute("xmlns", "urn:xmpp:receipts"));
     xep0184_received.addAttribute(new XmppAttribute("id", message.id));
     dr.addChild(xep0184_received);
-    this.connection.writeStanza(dr);
+    connection.writeStanza(dr);
   }
 
   /// adds an XEP-0184 request DRR child <request xmlns='urn:xmpp:receipts'/> to the stanza
