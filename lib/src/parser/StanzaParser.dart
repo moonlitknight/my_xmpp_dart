@@ -12,7 +12,7 @@ import 'package:xmpp_stone/src/features/servicediscovery/Identity.dart';
 import 'package:xmpp_stone/src/parser/IqParser.dart';
 
 import '../elements/stanzas/MessageStanza.dart';
-import '../logger/Log.dart';
+/* import '../logger/Log.dart'; */
 
 class StanzaParser {
   static const TAG = 'StanzaParser';
@@ -21,9 +21,9 @@ class StanzaParser {
   static AbstractStanza? parseStanza(xml.XmlElement element) {
     AbstractStanza? stanza;
     var id = element.getAttribute('id');
-    if (id == null) {
-      Log.d(TAG, 'No id found for stanza');
-    }
+    /* if (id == null) { */
+    /*   Log.d(TAG, 'No id found for stanza'); */
+    /* } */
 
     if (element.name.local == 'iq') {
       stanza = IqParser.parseIqStanza(id, element);
@@ -56,7 +56,7 @@ class StanzaParser {
     var typeString = element.getAttribute('type');
     MessageStanzaType? type;
     if (typeString == null) {
-      Log.w(TAG, 'No type found for message stanza');
+      /* Log.w(TAG, 'No type found for message stanza'); */
     } else {
       switch (typeString) {
         case 'chat':
