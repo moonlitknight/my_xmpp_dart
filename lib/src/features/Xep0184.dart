@@ -2,17 +2,26 @@ import 'package:xmpp_stone/xmpp_stone.dart';
 
 class Xep0184 {
   /// examines the children of the message stanza looking for an XEP-0184 request
-  bool doesMessageHaveDRrequest(MessageStanza message) {
+  static bool doesMessageHaveDRrequest(MessageStanza message) {
     var hasDRr = false;
     message.children.forEach((element) {
-      print("--${element.name}------- ${element.getNameSpace()}");
       if ("request" == element.name &&
           "urn:xmpp:receipts" == element.getNameSpace()) {
         hasDRr = true;
       }
     });
-    print("returngin $hasDRr");
     return hasDRr;
+  }
+
+  /// examines a message and returns the original ID if it is a DRreceipt
+  static String? isThisDrReceipt(MessageStanza message) {
+    var child = message.getChild("received");
+    if (child != null &&
+        child.getAttribute("xmlns")!.value == "urn:xmpp:receipts") {
+      return child.getAttribute("id")!.value;
+    } else {
+      return null;
+    }
   }
 
   /// Send a XEP-0184 delivery receipt

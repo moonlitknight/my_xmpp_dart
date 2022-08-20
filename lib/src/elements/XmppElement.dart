@@ -39,7 +39,8 @@ class XmppElement {
     var xmlNodes = <xml.XmlNode>[];
     _attributes.forEach((xmppAttribute) {
       if (xmppAttribute.value != null) {
-        xmlAttributes.add(xml.XmlAttribute(xml.XmlName(xmppAttribute.name), xmppAttribute.value!));
+        xmlAttributes.add(xml.XmlAttribute(
+            xml.XmlName(xmppAttribute.name), xmppAttribute.value!));
       }
     });
     _children.forEach((xmppChild) {
@@ -48,7 +49,8 @@ class XmppElement {
     if (textValue != null) {
       xmlNodes.add(xml.XmlText(textValue!));
     }
-    var xmlElement = xml.XmlElement(xml.XmlName(name!), xmlAttributes, xmlNodes);
+    var xmlElement =
+        xml.XmlElement(xml.XmlName(name!), xmlAttributes, xmlNodes);
     return xmlElement;
   }
 
