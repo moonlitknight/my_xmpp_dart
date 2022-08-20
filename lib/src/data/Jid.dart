@@ -1,10 +1,12 @@
 import 'package:quiver/core.dart';
 
+/// initialise a Jid local, domain, resouce?
 class Jid {
   String _local = '';
   String _domain = '';
   String? _resource = '';
 
+  /// initialise a Jid local, domain, resouce?
   Jid(String local, String domain, String? resource) {
     _local = local;
     _domain = domain;

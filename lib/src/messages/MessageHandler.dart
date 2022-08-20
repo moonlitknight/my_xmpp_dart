@@ -33,12 +33,12 @@ class MessageHandler implements MessageApi {
   MessageHandler(this._connection);
 
   @override
-  void sendMessage(Jid to, String text, {XmppMessageAttributes? attributes}) {
+  String sendMessage(Jid to, String text, {XmppMessageAttributes? attributes}) {
     attributes = attributes ?? new XmppMessageAttributes();
-    _sendMessageStanza(to, text, attributes);
+    return _sendMessageStanza(to, text, attributes);
   }
 
-  void _sendMessageStanza(
+  String _sendMessageStanza(
       Jid jid, String text, XmppMessageAttributes attributes) {
     var stanza =
         MessageStanza(AbstractStanza.getRandomId(), attributes.messageType);
@@ -49,5 +49,6 @@ class MessageHandler implements MessageApi {
       Xep0184.addDRrequest(stanza);
     }
     _connection.writeStanza(stanza);
+    return stanza.id!;
   }
 }
