@@ -40,27 +40,26 @@ class PrintLog implements Log {
   }
 
   void xmppp_receiving(String message) {
-    /* if (message.startsWith('<a')) { */
-    /*   return; */
-    /* } */
-    /* if (message.startsWith('<r')) { */
-    /*   return; */
-    /* } */
+    if (message.startsWith('<a')) {
+      return;
+    }
+    if (message.startsWith('<r')) {
+      return;
+    }
     if (logXmpp) {
       log('\u001b[38:5:15m<<< \u001b[38:5:11m$message');
     }
   }
 
   void xmppp_sending(String message) {
-    /* if (message.startsWith('<a')) { */
-    /*   return; */
-    /* } */
-    /* if (message.startsWith('<r')) { */
-    /*   return; */
-    /* } */
+    if (message.startsWith('<a')) {
+      return;
+    }
+    if (message.startsWith('<r')) {
+      return;
+    }
     if (logXmpp) {
       log('\u001b[38:5:15m>>> \u001b[38:5:2m$message');
     }
   }
 }
-
