@@ -27,3 +27,4 @@ export 'src/features/message_archive/MessageArchiveManager.dart';
 /* moonlitknight */
 
 export 'src/features/Xep0184.dart';
+export 'src/features/Xep0060.dart';

@@ -3,6 +3,8 @@ import 'package:xmpp_stone/src/elements/XmppAttribute.dart';
 import 'package:xmpp_stone/src/elements/XmppElement.dart';
 import 'package:xmpp_stone/src/elements/stanzas/AbstractStanza.dart';
 
+import '../../data/Jid.dart';
+
 class MessageStanza extends AbstractStanza {
   MessageStanzaType? type;
 
@@ -12,6 +14,18 @@ class MessageStanza extends AbstractStanza {
     this.type = type;
     addAttribute(
         XmppAttribute('type', type.toString().split('.').last.toLowerCase()));
+  }
+
+  /// alternative constructor to make a MessageStanza from an Element
+  MessageStanza.fromXmppElement(XmppElement messageElement) {
+    this.fromJid = Jid.fromFullJid(messageElement.getAttribute('from')!.value!);
+    this.toJid = Jid.fromFullJid(messageElement.getAttribute('to')!.value!);
+    this.id = messageElement.getAttribute('id') != null
+        ? messageElement.getAttribute('id')!.value
+        : null;
+    this.body = messageElement.getChild('body') != null
+        ? messageElement.getChild('body')!.textValue
+        : null;
   }
 
   String? get body => children

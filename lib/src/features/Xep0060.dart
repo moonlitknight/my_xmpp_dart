@@ -1,7 +1,8 @@
 import 'package:xmpp_stone/xmpp_stone.dart';
 
-/// partial implementation of XEP_0184 Delivery Receipts
-class Xep0184 {
+/// partial implementation of XEP-0060 PubSub.
+/// Specifically, just enough to implement ejabberd MUCpub
+class Xep0060 {
   /// examines the children of the message stanza looking for an XEP-0184 request
   static bool doesMessageHaveDRrequest(MessageStanza message) {
     var hasDRr = false;
@@ -14,21 +15,28 @@ class Xep0184 {
     return hasDRr;
   }
 
-  /// examines a message and returns the original ID if it is a DRreceipt
-  static String? isThisDrReceipt(MessageStanza message) {
-    var child = message.getChild("received");
-    if (child != null &&
-        child.getAttribute("xmlns")!.value == "urn:xmpp:receipts") {
-      return child.getAttribute("id")!.value;
+  /// examines a message and returns an array of messages if it's a pubsub, null if not
+  static List<MessageStanza>? isaPub(MessageStanza message) {
+    List<MessageStanza> messages = [];
+    var eventChild = message.getChild("event");
+    if (eventChild != null &&
+        eventChild.getAttribute("xmlns")!.value ==
+            "http://jabber.org/protocol/pubsub#event") {
+      List<XmppElement> items = eventChild.getChild('items')!.children;
+      items.forEach((element) {
+        messages
+            .add(MessageStanza.fromXmppElement(element.getChild('message')!));
+      });
+      return messages;
     } else {
       return null;
     }
   }
 
-  /// Send a XEP-0184 delivery receipt
+  /// Send a XEP-0060 Subscription
   /// @param [Message] the incoming message we're receipting
   /* void sendDR(MessageStanza message); */
-  void sendDR(Connection connection, MessageStanza message) {
+  void sendSubscription(Connection connection, MessageStanza message) {
     print(
         "in senddr ${message.getAttribute('id')} ${message.fromJid!.fullJid} ${message.toJid!.fullJid} ${message.id}");
     /* var id = message.messageStanza.getAttribute("ine commentd"); */
@@ -46,13 +54,13 @@ class Xep0184 {
     connection.writeStanza(dr);
   }
 
-  /// adds an XEP-0184 request DRR child <request xmlns='urn:xmpp:receipts'/> to the stanza
-  static void addDRrequest(MessageStanza stanza) {
-    var requestChild = new XmppElement();
-    requestChild.name = "request";
-    requestChild.addAttribute(new XmppAttribute("xmlns", "urn:xmpp:receipts"));
-    stanza.addChild(requestChild);
-  }
+  /* /// adds an XEP-0184 request DRR child <request xmlns='urn:xmpp:receipts'/> to the stanza */
+  /* static void addDRrequest(MessageStanza stanza) { */
+  /*   var requestChild = new XmppElement(); */
+  /*   requestChild.name = "request"; */
+  /*   requestChild.addAttribute(new XmppAttribute("xmlns", "urn:xmpp:receipts")); */
+  /*   stanza.addChild(requestChild); */
+  /* } */
 }
 /*
 <message
