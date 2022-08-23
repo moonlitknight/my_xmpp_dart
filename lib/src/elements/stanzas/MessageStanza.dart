@@ -26,6 +26,17 @@ class MessageStanza extends AbstractStanza {
     this.body = messageElement.getChild('body') != null
         ? messageElement.getChild('body')!.textValue
         : null;
+    var typeS = messageElement.getAttribute('type') != null
+        ? messageElement.getAttribute('type')!.value
+        : '';
+    type = MessageStanzaType.NORMAL;
+    // add any child elements
+    for (var child in messageElement.children) {
+      this.addChild(child);
+    }
+    try {
+      type = MessageStanzaType.values.byName(typeS!.toUpperCase());
+    } catch (e) {}
   }
 
   String? get body => children
